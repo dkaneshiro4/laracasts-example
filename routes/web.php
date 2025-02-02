@@ -3,7 +3,17 @@
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\SessionController;
+use App\Mail\JobPosted;
+use App\Models\Job;
 use Illuminate\Support\Facades\Route;
+
+//Route::get('test', function () {
+//    $job = Job::find(9);
+//    \Illuminate\Support\Facades\Mail::to('dkaneshi@gmail.com')->send(
+//        new JobPosted($job)
+//    );
+//    return 'Done';
+//});
 
 // Route::get('/', function () {
 //     return view('home');
