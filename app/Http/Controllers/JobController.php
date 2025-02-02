@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class JobController extends Controller
 {
@@ -42,12 +45,26 @@ class JobController extends Controller
 
     public function edit(Job $job)
     {
+        // An alternative way of checking if the logged in
+        // user cannot access the edit page.
+//        if (Auth::user()->cannot('edit-job', $job)) {
+//            abort(403);
+//        }
+
+        // Will check if the user can access the edit
+        // job page. It will send them to a 403
+        // page if they aren't supposed to.
+        // Gate::authorize('edit-job', $job);
+        // The above is commented out because the 'edit-job'
+        // gate is applied via middleware to the route.
+
         return view('jobs.edit', ['job' => $job]);
     }
 
     public function update(Job $job)
     {
         // authorize (on hold...)
+        Gate::authorize('edit-job', $job);
 
         request()->validate([
             'title' => ['required', 'min:3'],
@@ -65,6 +82,7 @@ class JobController extends Controller
     public function destroy(Job $job)
     {
         // authorize
+        Gate::authorize('edit-job', $job);
 
         $job->delete();
 

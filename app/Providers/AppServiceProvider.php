@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Job;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +26,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::preventLazyLoading();
 
-//        Paginator::useBootstrapFive();
+        // This gate will check if the current logged in user trying to
+        // pass through the gate to edit the job is the owner of the job.
+//        Gate::define('edit-job', function (User $user, Job $job) {
+//            return $job->employer->user->is($user);
+//        });
+
     }
 }
