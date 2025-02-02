@@ -1,80 +1,49 @@
 <?php
 
+use App\Http\Controllers\JobController;
 use Illuminate\Support\Facades\Route;
-use App\Models\Job;
 
-Route::get('/', function () {
-     return view('home');
-});
+// Route::get('/', function () {
+//     return view('home');
+// });
+// The line below is the same as the commented block above
+// it's a shorthand.
+Route::view('/', 'home');
 
-// Index
-Route::get('/jobs', function () {
-    $jobs = Job::with('employer')->latest()->simplePaginate(3);
+Route::view('/contact', 'contact')->middleware('auth');
 
-    return view('jobs.index', ['jobs' => $jobs]);
-});
+// Using the Route::resource method means you can't specify an alternative
+// identifying column like {job:slug}. You have to use the conventional id column.
+Route::resource('jobs', JobController::class);
 
-// Create
-Route::get('/jobs/create', function () {
-    return view('jobs.create');
-});
+// A third parameter can be passed in as an array telling which route resources to
+// use or exclude
+// Route::resource('jobs', JobController::class, [
+//     'only' => ['index', 'show']
+// ]);
 
-// Show
-Route::get('/jobs/{id}', function($id) {
-    $job = Job::find($id);
+// Below is equivalent to the above route resource, but resource naming
+// must follow convention. (index, create, show, store, edit, update, destroy)
+// Route::controller(JobController::class)->group(function () {
+//     Route::get('/jobs', 'index');
+//     Route::get('/jobs/create', 'create');
+//     Route::get('/jobs/{job}', 'show');
+//     Route::post('/jobs', 'store');
+//     Route::get('/jobs/{job}/edit', 'edit');
+//     Route::patch('/jobs/{job}', 'update');
+//     Route::delete('/jobs/{job}', 'destroy');
+// });
 
-    return view('jobs.show', ['job' => $job]);
-});
+// Below individual route-controller statements are equivalent to above route group
+// Route::get('/jobs', [JobController::class, 'index']);
+// Route::get('/jobs/create', [JobController::class, 'create']);
+// Route::get('/jobs/{job}', [JobController::class, 'show']);
+// Route::post('/jobs', [JobController::class, 'store']);
+// Route::get('/jobs/{job}/edit', [JobController::class, 'edit']);
+// Route::patch('/jobs/{job}', [JobController::class, 'update']);
+// Route::delete('/jobs/{job}', [JobController::class, 'destroy']);
 
-// Store
-Route::post('/jobs', function () {
-    request()->validate([
-        'title' => ['required', 'min:3'],
-        'salary' => ['required'],
-    ]);
+// Find {job:slug} means to find the job based on the
+// column called slug
+// Route::get('/jobs/{job:slug}')
 
-    Job::create([
-        'title' => request('title'),
-        'salary' => request('salary'),
-        'employer_id' => 3
-    ]);
-
-    return redirect('/jobs');
-});
-
-// Edit
-Route::get('/jobs/{id}/edit', function($id) {
-    $job = Job::find($id);
-
-    return view('jobs.edit', ['job' => $job]);
-});
-
-// Update
-Route::patch('/jobs/{id}', function($id) {
-    request()->validate([
-        'title' => ['required', 'min:3'],
-        'salary' => ['required'],
-    ]);
-    // authorize (on hold...)
-    $job = Job::findOrFail($id);
-
-    $job->update([
-        'title' => request('title'),
-        'salary' => request('salary'),
-    ]);
-
-    return redirect('/jobs/'. $job->id);
-});
-
-// Destroy
-Route::delete('/jobs/{id}', function($id) {
-    // authorize
-
-    Job::findOrFail($id)->delete();
-
-    return redirect('/jobs');
-});
-
-Route::get('/contact', function () {
-    return view('contact');
-});
