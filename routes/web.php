@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\RegisteredUserController;
+use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -10,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 // it's a shorthand.
 Route::view('/', 'home');
 
-Route::view('/contact', 'contact')->middleware('auth');
+Route::view('/contact', 'contact');
 
 // Using the Route::resource method means you can't specify an alternative
 // identifying column like {job:slug}. You have to use the conventional id column.
@@ -47,3 +49,9 @@ Route::resource('jobs', JobController::class);
 // column called slug
 // Route::get('/jobs/{job:slug}')
 
+// Auth
+Route::get('/register', [RegisteredUserController::class, 'create']);
+Route::post('/register', [RegisteredUserController::class, 'store']);
+
+Route::get('/login', [SessionController::class, 'create']);
+Route::post('/login', [SessionController::class, 'store']);
