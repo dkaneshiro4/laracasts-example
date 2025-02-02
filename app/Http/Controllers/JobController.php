@@ -38,8 +38,10 @@ class JobController extends Controller
         ]);
 
         // The email property from the user is not explicitly used because Laravel will
-        // know to use the email property automatically.
-        Mail::to($job->employer->user)->send(
+        // know to use the email property automatically. The Mail::send method will
+        // shoot off an email immediately, but the Mail::queue method will place
+        // the sending of the email into the jobs queue within the database.
+        Mail::to($job->employer->user)->queue(
             new JobPosted($job)
         );
 
